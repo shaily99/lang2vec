@@ -60,7 +60,7 @@ def available_uriel_languages():
     for feature_set in ["fam"]:
         filename, source, prefix = FEATURE_SETS_DICT[feature_set]
         filename = pkg_resources.resource_filename(__name__, os.path.join('data', filename))
-        feature_database = np.load(filename)
+        feature_database = np.load(filename, allow_pickle=True)
         mask = np.all(feature_database["data"] != -1.0, axis=0)
         langs = [feature_database["langs"][i] for i,m in enumerate(mask) if np.sum(m)>0]
         for l in langs:
@@ -138,10 +138,10 @@ def get_feature_index(feature_name, feature_database):
     return np.where(feature_database["feats"] == feature_name)[0][0]
     
 def get_id_set(lang_codes):
-    #feature_database = np.load("family_features.npz")
+    #feature_database = np.load("family_features.npz", allow_pickle=True)
     filename = "family_features.npz"
     filename = pkg_resources.resource_filename(__name__, os.path.join('data', filename))
-    feature_database = np.load(filename)
+    feature_database = np.load(filename, allow_pickle=True)
     lang_codes = [ get_language_code(l, feature_database) for l in lang_codes ]
     all_languages = list(feature_database["langs"])
     feature_names = [ "ID_" + l.upper() for l in all_languages ]
@@ -154,7 +154,7 @@ def get_id_set(lang_codes):
 def get_learned_set(lang_codes):
     filename = "learned.npy"
     filename = pkg_resources.resource_filename(__name__, os.path.join('data', filename))
-    feature_database = np.load(filename, encoding="latin1").item()
+    feature_database = np.load(filename, encoding="latin1", allow_pickle=True).item()
     lang_codes = [ get_learned_language_code(l, feature_database) for l in lang_codes ]
     feature_names = [ "LEARNED_%03d" % i for i in range(512) ]
     feature_values = np.ones((len(lang_codes),512))*(-1)
@@ -178,7 +178,7 @@ def get_named_set(lang_codes, feature_set):
         
     filename, source, prefix = FEATURE_SETS_DICT[feature_set]
     filename = pkg_resources.resource_filename(__name__, os.path.join('data', filename))
-    feature_database = np.load(filename)
+    feature_database = np.load(filename, allow_pickle=True)
     lang_codes = [ get_language_code(l, feature_database) for l in lang_codes ]
     lang_indices = [ get_language_index(l, feature_database) for l in lang_codes ]
     feature_names = get_feature_names(prefix, feature_database)
